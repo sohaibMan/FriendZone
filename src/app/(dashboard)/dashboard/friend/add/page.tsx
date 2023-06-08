@@ -1,4 +1,4 @@
-import AddFriendButton from '@/components/AddFriendButton'
+import AddFriendButton from '@/Components/Buttons/wrapper/AddFriendButton'
 import { FC } from 'react'
 
 const page: FC = () => {

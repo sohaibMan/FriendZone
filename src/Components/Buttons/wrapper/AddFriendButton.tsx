@@ -3,7 +3,7 @@
 import { addFriendValidator } from '@/lib/validations/add-friend'
 import axios, { AxiosError } from 'axios'
 import { FC, useState } from 'react'
-import Button from './ui/Button'
+import Button from '@/Components/Buttons/base/Button'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'

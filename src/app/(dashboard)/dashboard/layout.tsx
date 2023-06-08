@@ -1,16 +1,16 @@
-import {Icon, Icons} from '@/components/Icons'
-import SignOutButton from '@/components/SignOutButton'
+import {Icon, Icons} from '@/Components/Icons/Icons'
+import SignOutButton from '@/Components/Buttons/wrapper/SignOutButton'
 import {authOptions} from '@/lib/auth'
 import {getServerSession} from 'next-auth'
 import Image from 'next/image'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {ReactNode} from 'react'
-import FriendRequestSidebarOptions from '@/components/FriendRequestSidebarOptions'
+import FriendRequestSidebarOptions from '@/Components/SideBar/FriendRequestSidebarOptions'
 import {fetchRedis} from '@/helpers/redis'
 import {getFriendsByUserId} from '@/helpers/get-friends-by-user-id'
-import SidebarChatList from '@/components/SidebarChatList'
-import MobileChatLayout from '@/components/MobileChatLayout'
+import SidebarChatList from '@/Components/SideBar/SidebarChatList'
+import MobileChatLayout from '@/Components/MobileChatLayout'
 import {SidebarOption} from '@/types/typings'
 
 interface LayoutProps {
@@ -27,8 +27,26 @@ const sidebarOptions: SidebarOption[] = [
     {
         id: 1,
         name: 'Add friend',
-        href: '/dashboard/add',
+        href: '/dashboard/friend/add',
         Icon: 'UserPlus',
+    },
+    {
+        id: 2,
+        name: 'Create Group',
+        href: '/dashboard/group/create',
+        Icon: 'Plus',
+    },
+    {
+        id: 3,
+        name: 'Join Group',
+        href: '/dashboard/group/add',
+        Icon: 'Users',
+    },
+    {
+        id: 3,
+        name: 'send invite to join Group(todo) and group invites todo',
+        href: '/dashboard/group/invite',
+        Icon: 'Users',
     },
 ]
 
@@ -37,7 +55,7 @@ const Layout = async ({children}: LayoutProps) => {
     if (!session) notFound()
 
     const friends = await getFriendsByUserId(session.user.id)
-    console.log('friends', friends)
+    // console.log('friends', friends)
 
     const unseenRequestCount = (
         (await fetchRedis(
@@ -128,7 +146,6 @@ const Layout = async ({children}: LayoutProps) => {
                   </span>
                                 </div>
                             </div>
-
                             <SignOutButton className='h-full aspect-square'/>
                         </li>
                     </ul>

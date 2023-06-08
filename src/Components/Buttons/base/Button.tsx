@@ -54,11 +54,3 @@ export default Button
 
 
 
-
-
-interface PersonInterface {
-  age: number
-  name: string
-  job?: boolean
-}
-

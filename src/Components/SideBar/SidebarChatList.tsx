@@ -5,7 +5,8 @@ import { chatHrefConstructor, toPusherKey } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import UnseenChatToast from './UnseenChatToast'
+import UnseenChatToast from '../UnseenChatToast'
+import Link from "next/link";
 
 interface SidebarChatListProps {
   friends: User[]
@@ -28,7 +29,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
 
     const newFriendHandler = (newFriend: User) => {
-      console.log("received new user", newFriend)
+      // console.log("received new user", newFriend)
       setActiveChats((prev) => [...prev, newFriend])
     }
 
@@ -83,7 +84,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
 
         return (
           <li key={friend.id}>
-            <a
+            <Link
               href={`/dashboard/chat/${chatHrefConstructor(
                 sessionId,
                 friend.id
@@ -95,7 +96,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
                   {unseenMessagesCount}
                 </div>
               ) : null}
-            </a>
+            </Link>
           </li>
         )
       })}

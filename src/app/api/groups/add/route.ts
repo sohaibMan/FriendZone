@@ -3,71 +3,79 @@ import {authOptions} from '@/lib/auth'
 import {db} from '@/lib/db'
 import {pusherServer} from '@/lib/pusher'
 import {toPusherKey} from '@/lib/utils'
-import {addFriendValidator} from '@/lib/validations/add-friend'
 import {getServerSession} from 'next-auth'
 import {z} from 'zod'
+import {addGroupValidator} from "@/lib/validations/add-group";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
 
-        const {email: emailToAdd} = addFriendValidator.parse(body.email)
+        console.log(body)
+
+        const {group_name} = addGroupValidator.parse(body.group_name)
+
+        console.log(group_name)
 
         const session = await getServerSession(authOptions)
 
         if (!session) {
             return new Response('Unauthorized', {status: 401})
         }
-        const userToAddId = (await fetchRedis(
+
+
+        let group: string | Group = (await fetchRedis(
             'get',
-            `user:email:${emailToAdd}`
-        )) as string
+            `group:group_name:${group_name}`
+        ))
 
-        if (!userToAddId) {
-            return new Response('This person does not exist.', {status: 400})
+        if (!group) {
+            return new Response('This group does not exist.', {status: 400})
         }
+        //parse group object
+        group = JSON.parse(group as string) as Group
 
 
-        if (userToAddId === session.user.id) {
+        if (group.group_owner_id === session.user.id) {
             return new Response('You cannot add yourself as a friend', {
                 status: 400,
             })
         }
 
-        // check if user already sends a friend request
-        const isAlreadyAdded = (await fetchRedis(
+        // check if user is already added
+        const isAlreadySendJoinRequest = (await fetchRedis(
             'sismember',
-            `user:${userToAddId}:incoming_friend_requests`,
+            `group:${group_name}:incoming_group_requests`,
             session.user.id
         )) as 0 | 1
 
-        if (isAlreadyAdded) {
-            return new Response('Already added this user', {status: 400})
+        if (isAlreadySendJoinRequest) {
+            return new Response('Already send a request to join this group please wait', {status: 400})
         }
 
         // check if user is already added
-        const isAlreadyFriends = (await fetchRedis(
+        const isAlreadyJoined = (await fetchRedis(
             'sismember',
-            `user:${session.user.id}:friends`,
-            userToAddId
+            `user:${session.user.id}:members`,
+            group_name
         )) as 0 | 1
 
-        if (isAlreadyFriends) {
-            return new Response('Already friends with this user', {status: 400})
+        if (isAlreadyJoined) {
+            return new Response('Already joined this group', {status: 400})
         }
 
         // valid request, send friend request
 
         await pusherServer.trigger(
-            toPusherKey(`user:${userToAddId}:incoming_friend_requests`),
-            'incoming_friend_requests',
+            toPusherKey(`user:${group_name}:incoming_group_requests`),
+            'incoming_group_requests',
             {
                 senderId: session.user.id,
                 senderEmail: session.user.email,
             }
         )
 
-        await db.sadd(`user:${userToAddId}:incoming_friend_requests`, session.user.id)
+        await db.sadd(`group:${group_name}:incoming_group_requests`, session.user.id)
 
         return new Response('OK')
     } catch (error) {

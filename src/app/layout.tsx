@@ -1,5 +1,6 @@
-import Providers from '@/components/Providers'
+import Providers from '@/Components/Providers'
 import './globals.css'
+import React from "react";
 
 // Done after the video and optional: add page metadata
 export const metadata = {

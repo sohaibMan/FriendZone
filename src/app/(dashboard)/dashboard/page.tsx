@@ -23,7 +23,7 @@ const page = async ({}) => {
                 -1
             )) as string[]
 
-            console.log(lastMessageRaw)
+            // console.log(lastMessageRaw)
 
             const lastMessage = JSON.parse(lastMessageRaw || '{}') as Message
 

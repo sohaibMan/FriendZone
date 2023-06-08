@@ -28,7 +28,7 @@ const sidebarOptions: SidebarOption[] = [
     {
         id: 1,
         name: 'Add friend',
-        href: '/dashboard/friend/join',
+        href: '/dashboard/friend/add',
         Icon: 'UserPlus',
     },
     {
@@ -45,7 +45,7 @@ const sidebarOptions: SidebarOption[] = [
     },
     {
         id: 4,
-        name: 'send invite to join Group(todo) and group invites todo',
+        name: 'Invite to join Group',
         href: '/dashboard/group/invite',
         Icon: 'Users',
     },

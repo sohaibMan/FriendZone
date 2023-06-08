@@ -2,7 +2,7 @@ import Providers from '@/Components/Providers'
 import './globals.css'
 import React from "react";
 
-// Done after the video and optional: add page metadata
+// Done after the video and optional: join page metadata
 export const metadata = {
   title: 'FriendZone | Home',
   description: 'Welcome to the FriendZone',

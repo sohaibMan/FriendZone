@@ -6,12 +6,12 @@ import Button from '@/Components/Buttons/base/Button'
 import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {addGroupValidator} from "@/lib/validations/add-group";
+import {GroupValidator} from "@/lib/validations/add-group";
 
 interface CreateGroupButtonsProps {
 }
 
-type FormData = z.infer<typeof addGroupValidator>
+type FormData = z.infer<typeof GroupValidator>
 
 const CreateGroupButtons: FC<CreateGroupButtonsProps> = ({}) => {
     const [showSuccessState, setShowSuccessState] = useState<boolean>(false)
@@ -22,14 +22,14 @@ const CreateGroupButtons: FC<CreateGroupButtonsProps> = ({}) => {
         setError,
         formState: {errors},
     } = useForm<FormData>({
-        resolver: zodResolver(addGroupValidator),
+        resolver: zodResolver(GroupValidator),
     })
 
     const createGroup = async (group_name_input: string) => {
         try {
             // validate user input
             console.log(group_name_input)
-            const {group_name} = addGroupValidator.parse({group_name: group_name_input})
+            const {group_name} = GroupValidator.parse({group_name: group_name_input})
 
             console.log(group_name)
 

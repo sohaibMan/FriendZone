@@ -5,15 +5,15 @@ import {pusherServer} from '@/lib/pusher'
 import {toPusherKey} from '@/lib/utils'
 import {getServerSession} from 'next-auth'
 import {z} from 'zod'
-import {addGroupValidator} from "@/lib/validations/add-group";
+import {GroupValidator} from "@/lib/validations/add-group";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
 
-        console.log(body)
 
-        const {group_name} = addGroupValidator.parse(body.group_name)
+        const {group_name} = GroupValidator.parse({group_name: body.group_name})
+
 
         console.log(group_name)
 
@@ -23,24 +23,28 @@ export async function POST(req: Request) {
             return new Response('Unauthorized', {status: 401})
         }
 
+        console.log(group_name)
 
-        let group: string | Group = (await fetchRedis(
-            'get',
-            `group:group_name:${group_name}`
-        ))
-
-        if (!group) {
+        let group: string | Group;
+        try {
+            group = (await fetchRedis(
+                'get',
+                `group:${group_name}`
+            ))
+        } catch (error) {
             return new Response('This group does not exist.', {status: 400})
         }
+
+
         //parse group object
         group = JSON.parse(group as string) as Group
 
-
-        if (group.group_owner_id === session.user.id) {
-            return new Response('You cannot add yourself as a friend', {
-                status: 400,
-            })
-        }
+        console.log(group)
+        // if (group.group_owner_id === session.user.id) {
+        //     return new Response('You cannot join yourself as a friend', {
+        //         status: 400,
+        //     })
+        // }
 
         // check if user is already added
         const isAlreadySendJoinRequest = (await fetchRedis(
@@ -56,7 +60,7 @@ export async function POST(req: Request) {
         // check if user is already added
         const isAlreadyJoined = (await fetchRedis(
             'sismember',
-            `user:${session.user.id}:members`,
+            `user:${session.user.id}:group-members`,
             group_name
         )) as 0 | 1
 
@@ -79,6 +83,7 @@ export async function POST(req: Request) {
 
         return new Response('OK')
     } catch (error) {
+        console.error(error)
         if (error instanceof z.ZodError) {
             return new Response('Invalid request payload', {status: 422})
         }

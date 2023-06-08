@@ -12,12 +12,13 @@ import {getFriendsByUserId} from '@/helpers/get-friends-by-user-id'
 import SidebarChatList from '@/Components/SideBar/SidebarChatList'
 import MobileChatLayout from '@/Components/MobileChatLayout'
 import {SidebarOption} from '@/types/typings'
+import GroupRequestSidebarOptions from "@/Components/SideBar/GroupRequestSidebarOptions";
 
 interface LayoutProps {
     children: ReactNode
 }
 
-// Done after the video and optional: add page metadata
+// Done after the video and optional: join page metadata
 export const metadata = {
     title: 'FriendZone | Dashboard',
     description: 'Your dashboard',
@@ -27,7 +28,7 @@ const sidebarOptions: SidebarOption[] = [
     {
         id: 1,
         name: 'Add friend',
-        href: '/dashboard/friend/add',
+        href: '/dashboard/friend/join',
         Icon: 'UserPlus',
     },
     {
@@ -39,11 +40,11 @@ const sidebarOptions: SidebarOption[] = [
     {
         id: 3,
         name: 'Join Group',
-        href: '/dashboard/group/add',
+        href: '/dashboard/group/join',
         Icon: 'Users',
     },
     {
-        id: 3,
+        id: 4,
         name: 'send invite to join Group(todo) and group invites todo',
         href: '/dashboard/group/invite',
         Icon: 'Users',
@@ -55,9 +56,9 @@ const Layout = async ({children}: LayoutProps) => {
     if (!session) notFound()
 
     const friends = await getFriendsByUserId(session.user.id)
-    // console.log('friends', friends)
 
-    const unseenRequestCount = (
+
+    const unseenFriendRequestCount = (
         (await fetchRedis(
             'smembers',
             `user:${session.user.id}:incoming_friend_requests`
@@ -71,7 +72,7 @@ const Layout = async ({children}: LayoutProps) => {
                     friends={friends}
                     session={session}
                     sidebarOptions={sidebarOptions}
-                    unseenRequestCount={unseenRequestCount}
+                    unseenFriendRequestCount={unseenFriendRequestCount}
                 />
             </div>
 
@@ -119,7 +120,13 @@ const Layout = async ({children}: LayoutProps) => {
                                 <li>
                                     <FriendRequestSidebarOptions
                                         sessionId={session.user.id}
-                                        initialUnseenRequestCount={unseenRequestCount}
+                                        initialUnseenFriendRequestCount={unseenFriendRequestCount}
+                                    />
+                                </li>
+                                <li>
+                                    <GroupRequestSidebarOptions
+                                        sessionId={session.user.id}
+                                        initialUnseenGroupRequestCount={unseenFriendRequestCount}
                                     />
                                 </li>
                             </ul>

@@ -1,18 +1,17 @@
 'use client'
 
-import {addFriendValidator} from '@/lib/validations/add-friend'
 import axios, {AxiosError} from 'axios'
 import {FC, useState} from 'react'
 import Button from '@/Components/Buttons/base/Button'
 import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {addGroupValidator} from "@/lib/validations/add-group";
+import {GroupValidator} from "@/lib/validations/add-group";
 
 interface JoinGroupButtonProps {
 }
 
-type FormData = z.infer<typeof addGroupValidator>
+type FormData = z.infer<typeof GroupValidator>
 
 const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
     const [showSuccessState, setShowSuccessState] = useState<boolean>(false)
@@ -23,15 +22,15 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
         setError,
         formState: {errors},
     } = useForm<FormData>({
-        resolver: zodResolver(addFriendValidator),
+        resolver: zodResolver(GroupValidator),
     })
 
-    const addFriend = async (group_name_input: string) => {
+    const joinGroup = async (group_name_input: string) => {
         try {
             // validate user input
-            const {group_name} = addGroupValidator.parse({group_name_input})
+            const {group_name} = GroupValidator.parse({group_name: group_name_input})
 
-            await axios.post('/api/groups/add', {
+            await axios.post('/api/groups/join', {
                 group_name,
             })
 
@@ -53,7 +52,8 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
     }
 
     const onSubmit = async (data: FormData) => {
-        await addFriend(data.group_name)
+        setShowSuccessState(false);
+        await joinGroup(data.group_name)
     }
 
     return (

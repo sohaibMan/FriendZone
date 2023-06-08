@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
 
         if (userToAddId === session.user.id) {
-            return new Response('You cannot add yourself as a friend', {
+            return new Response('You cannot join yourself as a friend', {
                 status: 400,
             })
         }

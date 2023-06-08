@@ -1,5 +1,5 @@
 import { z } from 'zod'
 
-export const addGroupValidator = z.object({
+export const GroupValidator = z.object({
   group_name: z.string(),
 })

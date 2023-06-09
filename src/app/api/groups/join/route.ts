@@ -5,17 +5,14 @@ import {pusherServer} from '@/lib/pusher'
 import {toPusherKey} from '@/lib/utils'
 import {getServerSession} from 'next-auth'
 import {z} from 'zod'
-import {GroupValidator} from "@/lib/validations/add-group";
+import {InviteUserToGroupValidator} from "@/lib/validations/add-group";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
 
+        const {group_name, user_name} = InviteUserToGroupValidator.parse(body)
 
-        const {group_name} = GroupValidator.parse({group_name: body.group_name})
-
-
-        console.log(group_name)
 
         const session = await getServerSession(authOptions)
 
@@ -23,8 +20,7 @@ export async function POST(req: Request) {
             return new Response('Unauthorized', {status: 401})
         }
 
-        console.log(group_name)
-
+        // check if the group exists
         let group: string | Group;
         try {
             group = (await fetchRedis(
@@ -34,17 +30,23 @@ export async function POST(req: Request) {
         } catch (error) {
             return new Response('This group does not exist.', {status: 400})
         }
+        // check if the user exists
+        let user: string | User;
+        try {
+            user = (await fetchRedis(
+                'get',
+                `user:${user_name}`
+            ))
+        } catch (error) {
+            return new Response('This user does not exist.', {status: 400})
+        }
 
 
-        //parse group object
+        //parse group and user objects
         group = JSON.parse(group as string) as Group
+        user = JSON.parse(user as string) as User
+        //todo check the user the the group admin
 
-        console.log(group)
-        // if (group.group_owner_id === session.user.id) {
-        //     return new Response('You cannot join yourself as a friend', {
-        //         status: 400,
-        //     })
-        // }
 
         // check if user is already added
         const isAlreadySendJoinRequest = (await fetchRedis(
@@ -60,8 +62,8 @@ export async function POST(req: Request) {
         // check if user is already added
         const isAlreadyJoined = (await fetchRedis(
             'sismember',
-            `user:${session.user.id}:group-members`,
-            group_name
+            `group:${group_name}:group-members`,
+            session.user.id
         )) as 0 | 1
 
         if (isAlreadyJoined) {
@@ -76,6 +78,7 @@ export async function POST(req: Request) {
             {
                 senderId: session.user.id,
                 senderEmail: session.user.email,
+                groupName: group_name,
             }
         )
 

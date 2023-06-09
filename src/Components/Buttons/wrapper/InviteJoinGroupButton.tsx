@@ -6,36 +6,37 @@ import Button from '@/Components/Buttons/base/Button'
 import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {GroupValidator} from "@/lib/validations/add-group";
+import {InviteUserToGroupValidator} from "@/lib/validations/add-group";
 
 interface JoinGroupButtonProps {
 }
 
-interface FormData {
-    group_name: string
-    user_name: string
-
-}
+type FormData = z.infer<typeof InviteUserToGroupValidator>
 
 const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
-    const [showSuccessState, setShowSuccessState] = useState<boolean>(false)
 
+    const [showSuccessState, setShowSuccessState] = useState<boolean>(false)
     const {
         register,
         handleSubmit,
         setError,
         formState: {errors},
     } = useForm<FormData>({
-        resolver: zodResolver(GroupValidator),
+        resolver: zodResolver(InviteUserToGroupValidator),
     })
 
-    const joinGroup = async (group_name_input: string) => {
+    const joinGroup = async (group_name_input: string, user_name_input: string) => {
         try {
             // validate user input
-            const {group_name} = GroupValidator.parse({group_name: group_name_input})
+            const {group_name, user_name} = InviteUserToGroupValidator.parse({
+                group_name: group_name_input,
+                user_name: user_name_input
+            })
+
 
             await axios.post('/api/groups/join', {
                 group_name,
+                user_name,
             })
 
             setShowSuccessState(true)
@@ -57,7 +58,7 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
 
     const onSubmit = async (data: FormData) => {
         setShowSuccessState(false);
-        await joinGroup(data.group_name)
+        await joinGroup(data.group_name, data.user_name)
     }
 
     return (
@@ -76,7 +77,7 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
                     className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                     placeholder='LSI_2023'
                 />
-                <Button>Join</Button>
+                <Button>Invite</Button>
             </div>
             <p className='mt-1 text-sm text-red-600'>{errors.group_name?.message}</p>
             {showSuccessState ? (

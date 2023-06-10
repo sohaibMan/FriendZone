@@ -20,23 +20,23 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
         register,
         handleSubmit,
         setError,
-        formState: {errors},
+        formState: {errors, isLoading},
     } = useForm<FormData>({
         resolver: zodResolver(InviteUserToGroupValidator),
     })
 
-    const joinGroup = async (group_name_input: string, user_name_input: string) => {
+    const joinGroup = async (group_name_input: string, email_input: string) => {
         try {
             // validate user input
-            const {group_name, user_name} = InviteUserToGroupValidator.parse({
+            const {group_name, email} = InviteUserToGroupValidator.parse({
                 group_name: group_name_input,
-                user_name: user_name_input
+                email: email_input
             })
 
 
             await axios.post('/api/groups/join', {
                 group_name,
-                user_name,
+                email,
             })
 
             setShowSuccessState(true)
@@ -58,7 +58,7 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
 
     const onSubmit = async (data: FormData) => {
         setShowSuccessState(false);
-        await joinGroup(data.group_name, data.user_name)
+        await joinGroup(data.group_name, data.email)
     }
 
     return (
@@ -66,18 +66,20 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
 
             <div className='mt-2 flex gap-4 flex-col'>
                 <input
-                    {...register('user_name')}
-                    type='text'
+                    {...register('email')}
+                    type='email'
                     className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                    placeholder='sohaib manah'
+                    placeholder='email@example.com'
+                    required={true}
                 />
                 <input
                     {...register('group_name')}
                     type='text'
                     className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                     placeholder='LSI_2023'
+                    required={true}
                 />
-                <Button>Invite</Button>
+                <Button isLoading={isLoading}>Invite</Button>
             </div>
             <p className='mt-1 text-sm text-red-600'>{errors.group_name?.message}</p>
             {showSuccessState ? (

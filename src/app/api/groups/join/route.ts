@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json()
 
-        const {group_name, user_name} = InviteUserToGroupValidator.parse(body)
+        const {group_name, email} = InviteUserToGroupValidator.parse(body)
 
 
         const session = await getServerSession(authOptions)
@@ -21,32 +21,23 @@ export async function POST(req: Request) {
         }
 
         // check if the group exists
-        let group: string | Group;
-        try {
-            group = (await fetchRedis(
-                'get',
-                `group:${group_name}`
-            ))
-        } catch (error) {
-            return new Response('This group does not exist.', {status: 400})
-        }
+
+        const isGroupExists = await fetchRedis(
+            'exists',
+            `group:${group_name}:group-admins`
+        ) as 0 | 1
+
+        if (isGroupExists === 0) return new Response('This group does not exist.', {status: 400})
+
         // check if the user exists
-        let user: string | User;
-        try {
-            user = (await fetchRedis(
-                'get',
-                `user:${user_name}`
-            ))
-        } catch (error) {
-            return new Response('This user does not exist.', {status: 400})
+        const isUserExists = (await fetchRedis(
+            'exists',
+            `user:email:${email}`
+        )) as 0 | 1
+
+        if (!isUserExists) {
+            return new Response('This person does not exist.', {status: 400})
         }
-
-
-        //parse group and user objects
-        group = JSON.parse(group as string) as Group
-        user = JSON.parse(user as string) as User
-        //todo check the user the the group admin
-
 
         // check if user is already added
         const isAlreadySendJoinRequest = (await fetchRedis(
@@ -66,7 +57,7 @@ export async function POST(req: Request) {
             session.user.id
         )) as 0 | 1
 
-        if (isAlreadyJoined) {
+        if (isAlreadyJoined === 1) {
             return new Response('Already joined this group', {status: 400})
         }
 

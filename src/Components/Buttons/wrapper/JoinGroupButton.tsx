@@ -30,7 +30,7 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
             // validate user input
             const {group_name} = GroupValidator.parse({group_name: group_name_input})
 
-            await axios.post('/api/groups/join', {
+            await axios.post('/api/groups/invite', {
                 group_name,
             })
 

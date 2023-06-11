@@ -34,7 +34,7 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
             })
 
 
-            await axios.post('/api/groups/join', {
+            await axios.post('/api/groups/invite', {
                 group_name,
                 email,
             })

@@ -1,37 +1,58 @@
-import FriendRequests from '@/Components/SideBar/FriendRequests'
+import GroupRequests from '@/Components/SideBar/GroupRequests'
 import {fetchRedis} from '@/helpers/redis'
 import {authOptions} from '@/lib/auth'
 import {getServerSession} from 'next-auth'
 import {notFound} from 'next/navigation'
 
+
 const page = async () => {
     const session = await getServerSession(authOptions)
     if (!session) notFound()
-
-    // ids of people who sent current logged in user a friend requests
-    const incomingSenderIds = (await fetchRedis(
+    // get all user's groups
+    const groups = (await fetchRedis(
         'smembers',
-        `group:${session.user.id}:incoming_friend_requests`
+        `user:${session.user.id}:groups`,
     )) as string[]
 
-    const incomingFriendRequests = await Promise.all(
-        incomingSenderIds.map(async (senderId) => {
+
+    let incomingSenderIdsPromises: Promise<string[]>[] = []
+
+    groups.map(async (group) => {
+        incomingSenderIdsPromises.push(fetchRedis(
+            'smembers',
+            `group:${group}:incoming_group_requests`,
+        ))
+
+
+    })
+
+
+    const incomingSenderIds = await Promise.all(incomingSenderIdsPromises) as string[][];
+
+
+    // ids of people who sent current logged-in user a group requests
+    let incomingGroupRequests: IncomingGroupRequest[] = [];
+    // get all incoming group requests
+    if (incomingSenderIds && incomingSenderIds.flat().length >= 1) incomingGroupRequests = await Promise.all(
+        incomingSenderIds.flat().map(async (senderId, groupId) => {
+
             const sender = (await fetchRedis('get', `user:${senderId}`)) as string
             const senderParsed = JSON.parse(sender) as User
 
             return {
                 senderId,
                 senderEmail: senderParsed.email,
+                groupName: groups[groupId]
             }
         })
     )
 
     return (
         <main className='pt-8'>
-            <h1 className='font-bold text-5xl mb-8'>Add a friend to your group</h1>
+            <h1 className='font-bold text-5xl mb-8'>Add a group to your group</h1>
             <div className='flex flex-col gap-4'>
-                <FriendRequests
-                    incomingFriendRequests={incomingFriendRequests}
+                <GroupRequests
+                    incomingGroupRequests={incomingGroupRequests}
                     sessionId={session.user.id}
                 />
             </div>

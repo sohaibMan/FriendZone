@@ -18,7 +18,7 @@ interface LayoutProps {
     children: ReactNode
 }
 
-// Done after the video and optional: join page metadata
+// Done after the video and optional: invite page metadata
 export const metadata = {
     title: 'FriendZone | Dashboard',
     description: 'Your dashboard',

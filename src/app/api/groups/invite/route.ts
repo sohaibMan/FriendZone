@@ -11,8 +11,6 @@ export async function POST(req: Request) {
     try {
         const body = await req.json()
 
-        const {group_name, email} = InviteUserToGroupValidator.parse(body)
-
 
         const session = await getServerSession(authOptions)
 
@@ -20,11 +18,16 @@ export async function POST(req: Request) {
             return new Response('Unauthorized', {status: 401})
         }
 
-        // check if the group exists
+        const {group_name, email} = InviteUserToGroupValidator.parse({
+            email: body.user_email || session.user.email,
+            group_name: body.group_name
+        })
 
+
+        // check if the group exist
         const isGroupExists = await fetchRedis(
             'exists',
-            `group:${group_name}:group-admins`
+            `group:${group_name}:group-members`
         ) as 0 | 1
 
         if (isGroupExists === 0) return new Response('This group does not exist.', {status: 400})
@@ -47,7 +50,7 @@ export async function POST(req: Request) {
         )) as 0 | 1
 
         if (isAlreadySendJoinRequest) {
-            return new Response('Already send a request to join this group please wait', {status: 400})
+            return new Response('Already send a request to invite this group please wait', {status: 400})
         }
 
         // check if user is already added
@@ -64,7 +67,7 @@ export async function POST(req: Request) {
         // valid request, send friend request
 
         await pusherServer.trigger(
-            toPusherKey(`user:${group_name}:incoming_group_requests`),
+            toPusherKey(`group:${group_name}:incoming_group_requests`),
             'incoming_group_requests',
             {
                 senderId: session.user.id,

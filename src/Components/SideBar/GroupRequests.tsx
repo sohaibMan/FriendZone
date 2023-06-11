@@ -48,8 +48,8 @@ const GroupRequests: FC<GroupRequestsProps> = ({
         }
     }, [groupRequests, sessionId])
 
-    const acceptGroup = async (senderId: string) => {
-        await axios.post('/api/groups/accept', {id: senderId})
+    const acceptGroup = async (senderId: string, groupName: string) => {
+        await axios.post('/api/groups/accept', {id: senderId, groupName})
 
         setGroupRequests((prev) =>
             prev.filter((request) => request.senderId !== senderId)
@@ -58,8 +58,8 @@ const GroupRequests: FC<GroupRequestsProps> = ({
         router.refresh()
     }
 
-    const denyGroup = async (senderId: string) => {
-        await axios.post('/api/groups/deny', {id: senderId})
+    const denyGroup = async (senderId: string, groupName: string) => {
+        await axios.post('/api/groups/deny', {id: senderId, groupName})
 
         setGroupRequests((prev) =>
             prev.filter((request) => request.senderId !== senderId)
@@ -79,14 +79,14 @@ const GroupRequests: FC<GroupRequestsProps> = ({
                         <p>{request.groupName}</p>
                         <p className='font-medium text-lg'>{request.senderEmail} </p>
                         <button
-                            onClick={() => acceptGroup(request.senderId)}
+                            onClick={() => acceptGroup(request.senderId, request.groupName)}
                             aria-label='accept group'
                             className='w-8 h-8 bg-indigo-600 hover:bg-indigo-700 grid place-items-center rounded-full transition hover:shadow-md'>
                             <Check className='font-semibold text-white w-3/4 h-3/4'/>
                         </button>
 
                         <button
-                            onClick={() => denyGroup(request.senderId)}
+                            onClick={() => denyGroup(request.senderId, request.groupName)}
                             aria-label='deny group'
                             className='w-8 h-8 bg-red-600 hover:bg-red-700 grid place-items-center rounded-full transition hover:shadow-md'>
                             <X className='font-semibold text-white w-3/4 h-3/4'/>

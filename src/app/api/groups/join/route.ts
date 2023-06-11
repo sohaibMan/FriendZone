@@ -5,31 +5,23 @@ import {pusherServer} from '@/lib/pusher'
 import {toPusherKey} from '@/lib/utils'
 import {getServerSession} from 'next-auth'
 import {z} from 'zod'
-import {InviteUserToGroupValidator} from "@/lib/validations/add-group";
+import {GroupValidator} from "@/lib/validations/add-group";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json()
 
-
         const session = await getServerSession(authOptions)
 
-        if (!session) {
+        if (!session?.user?.email) {
             return new Response('Unauthorized', {status: 401})
         }
 
-        const {group_name, email} = InviteUserToGroupValidator.parse({
-            email: body.user_email,
+        const {group_name} = GroupValidator.parse({
             group_name: body.group_name
         })
-        // check if the user is the owner of the group ( has permission to invite )
-        const isGroupOwner = (await fetchRedis(
-            'sismember',
-            `group:${group_name}:group-admins`,
-            session.user.id
-        )) as 0 | 1
 
-        if (isGroupOwner === 0) return new Response('You are not the owner of this group', {status: 400})
+
 
 
         // check if the group exist
@@ -40,15 +32,6 @@ export async function POST(req: Request) {
 
         if (isGroupExists === 0) return new Response('This group does not exist.', {status: 400})
 
-        // check if the user exists
-        const isUserExists = (await fetchRedis(
-            'exists',
-            `user:email:${email}`
-        )) as 0 | 1
-
-        if (!isUserExists) {
-            return new Response('This person does not exist.', {status: 400})
-        }
 
         // check if user is already added
         const isAlreadySendJoinRequest = (await fetchRedis(

@@ -65,6 +65,27 @@ const Layout = async ({children}: LayoutProps) => {
         )) as User[]
     ).length
 
+    const groups = (await fetchRedis(
+        'smembers',
+        `user:${session.user.id}:groups`,
+    )) as string[]
+
+    let incomingSenderIdsPromises: Promise<string[]>[] = []
+
+    groups.map(async (group) => {
+        incomingSenderIdsPromises.push(fetchRedis(
+            'smembers',
+            `group:${group}:incoming_group_requests`,
+        ))
+
+
+    })
+
+    const incomingSenderIds = await Promise.all(incomingSenderIdsPromises) as string[][];
+
+    const unseenJoinGroupRequestCount = incomingSenderIds.flat().length
+
+
     return (
         <div className='w-full flex h-screen'>
             <div className='md:hidden'>
@@ -126,7 +147,7 @@ const Layout = async ({children}: LayoutProps) => {
                                 <li>
                                     <GroupRequestSidebarOptions
                                         sessionId={session.user.id}
-                                        initialUnseenGroupRequestCount={unseenFriendRequestCount}
+                                        initialUnseenGroupRequestCount={unseenJoinGroupRequestCount}
                                     />
                                 </li>
                             </ul>

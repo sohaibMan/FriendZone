@@ -20,12 +20,11 @@ const GroupRequests: FC<GroupRequestsProps> = ({
     const [groupRequests, setGroupRequests] = useState<IncomingGroupRequest[]>(
         incomingGroupRequests
     )
-// todo find a way to listen to comming group request in realtime
+
     useEffect(() => {
-        groupRequests.forEach((group) =>
-            pusherClient.subscribe(
-                toPusherKey(`group:${group.groupName}:incoming_group_requests`)
-            )
+
+        pusherClient.subscribe(
+            toPusherKey(`user:${sessionId}:incoming_group_requests`)
         )
 
 
@@ -40,11 +39,11 @@ const GroupRequests: FC<GroupRequestsProps> = ({
         pusherClient.bind('incoming_group_requests', groupRequestHandler)
 
         return () => {
-            groupRequests.forEach((group) =>
-                pusherClient.unsubscribe(
-                    toPusherKey(`group:${group.groupName}:incoming_group_requests`)
-                )
+
+            pusherClient.unsubscribe(
+                toPusherKey(`user:${sessionId}:incoming_group_requests`)
             )
+
             pusherClient.unbind('incoming_group_requests', groupRequestHandler)
         }
     }, [groupRequests, sessionId])

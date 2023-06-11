@@ -23,7 +23,7 @@ const GroupRequestSidebarOptions: FC<GroupRequestSidebarOptionsProps> = ({
     pusherClient.subscribe(
       toPusherKey(`user:${sessionId}:incoming_group_requests`)
     )
-    pusherClient.subscribe(toPusherKey(`user:${sessionId}:groups`))
+    // pusherClient.subscribe(toPusherKey(`user:${sessionId}:groups`))
 
     const groupRequestHandler = () => {
       setUnseenRequestCount((prev) => prev + 1)
@@ -40,7 +40,7 @@ const GroupRequestSidebarOptions: FC<GroupRequestSidebarOptionsProps> = ({
       pusherClient.unsubscribe(
         toPusherKey(`user:${sessionId}:incoming_group_requests`)
       )
-      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:groups`))
+      // pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:groups`))
 
       pusherClient.unbind('new_group', addedGroupHandler)
       pusherClient.unbind('incoming_group_requests', groupRequestHandler)

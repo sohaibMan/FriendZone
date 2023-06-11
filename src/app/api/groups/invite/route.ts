@@ -64,10 +64,16 @@ export async function POST(req: Request) {
             return new Response('Already joined this group', {status: 400})
         }
 
-        // valid request, send friend request
 
+        const groupOwnerId = (await fetchRedis(
+            'smembers',
+            `group:${group_name}:group-admins`
+        ))[0] as string
+
+
+        // valid request, send friend request
         await pusherServer.trigger(
-            toPusherKey(`group:${group_name}:incoming_group_requests`),
+            toPusherKey(`user:${groupOwnerId}:incoming_group_requests`),
             'incoming_group_requests',
             {
                 senderId: session.user.id,

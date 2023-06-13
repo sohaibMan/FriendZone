@@ -16,12 +16,19 @@ import {usePathname} from 'next/navigation'
 
 interface MobileChatLayoutProps {
     friends: User[]
+    groups: string[]
     session: Session
     sidebarOptions: SidebarOption[]
     unseenFriendRequestCount: number
 }
 
-const MobileChatLayout: FC<MobileChatLayoutProps> = ({friends, session, sidebarOptions, unseenFriendRequestCount}) => {
+const MobileChatLayout: FC<MobileChatLayoutProps> = ({
+                                                         friends,
+                                                         groups,
+                                                         session,
+                                                         sidebarOptions,
+                                                         unseenFriendRequestCount
+                                                     }) => {
     const [open, setOpen] = useState<boolean>(false)
 
     const pathname = usePathname()

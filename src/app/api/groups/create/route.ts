@@ -27,7 +27,14 @@ export async function POST(req: Request) {
         //1_ add user to group members to receive messages
         //2_ append the group to the user groups(owner)
 
-        await Promise.all([db.sadd(`group:${group_name}:group-members`, session.user.id), db.sadd(`user:${session.user.id}:groups`, group_name), db.sadd(`group:${group_name}:group-admins`, session.user.id)])
+        await Promise.all([
+            db.sadd(`group:${group_name}:group-members`, session.user.id),
+            db.sadd(`user:${session.user.id}:groups`, group_name),
+            db.sadd(`group:${group_name}:group-admins`, session.user.id),
+            // pusherServer.trigger(toPusherKey(`group-${group_name}`), 'group-created', {
+            //     group_name,
+            // })
+        ])
 
         return new Response('OK')
     } catch (error) {

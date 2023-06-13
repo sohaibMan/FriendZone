@@ -7,6 +7,7 @@ import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {InviteUserToGroupValidator} from "@/lib/validations/add-group";
+import {toast} from "react-hot-toast";
 
 interface JoinGroupButtonProps {
 }
@@ -34,10 +35,15 @@ const JoinGroupButton: FC<JoinGroupButtonProps> = ({}) => {
             })
 
 
-            await axios.post('/api/groups/invite', {
-                group_name,
-                email,
-            })
+            await toast.promise(axios.post('/api/groups/invite', {
+                    group_name,
+                    email,
+                }), {
+                    loading: "loading",
+                    success: "success",
+                    error: "Sorry an error has occured"
+                }
+            )
 
             setShowSuccessState(true)
         } catch (error) {

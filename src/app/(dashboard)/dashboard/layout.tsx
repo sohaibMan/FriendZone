@@ -13,6 +13,7 @@ import SidebarChatList from '@/Components/SideBar/SidebarChatList'
 import MobileChatLayout from '@/Components/MobileChatLayout'
 import {SidebarOption} from '@/types/typings'
 import GroupRequestSidebarOptions from "@/Components/SideBar/GroupRequestSidebarOptions";
+import SidebarGroupChatList from "@/Components/SideBar/SidebarGroupChatList";
 
 interface LayoutProps {
     children: ReactNode
@@ -41,13 +42,13 @@ const sidebarOptions: SidebarOption[] = [
         id: 3,
         name: 'Join Group',
         href: '/dashboard/group/join',
-        Icon: 'Users',
+        Icon: 'Merge',
     },
     {
         id: 4,
         name: 'Invite to join Group',
         href: '/dashboard/group/invite',
-        Icon: 'Users',
+        Icon: 'Merge',
     },
 ]
 
@@ -91,6 +92,7 @@ const Layout = async ({children}: LayoutProps) => {
             <div className='md:hidden'>
                 <MobileChatLayout
                     friends={friends}
+                    groups={groups}
                     session={session}
                     sidebarOptions={sidebarOptions}
                     unseenFriendRequestCount={unseenFriendRequestCount}
@@ -103,16 +105,32 @@ const Layout = async ({children}: LayoutProps) => {
                     <Icons.Logo className='h-8 w-auto text-indigo-600'/>
                 </Link>
 
-                {friends.length > 0 ? (
-                    <div className='text-xs font-semibold leading-6 text-gray-400'>
-                        Your chats
-                    </div>
-                ) : null}
 
                 <nav className='flex flex-1 flex-col'>
                     <ul role='list' className='flex flex-1 flex-col gap-y-7'>
                         <li>
-                            <SidebarChatList sessionId={session.user.id} friends={friends}/>
+                            {friends.length > 0 ? (
+                                <>
+
+                                    <div className='text-xs font-semibold leading-6 text-gray-400'>
+                                        Your chats
+                                    </div>
+                                    <SidebarChatList sessionId={session.user.id} friends={friends}/>   </>
+                            ) : null}
+
+
+                        </li>
+                        <li>
+                            {groups.length > 0 ? (
+                                <>
+                                    <div className='text-xs font-semibold leading-6 text-gray-400'>
+                                        Your Groups
+                                    </div>
+                                    <SidebarGroupChatList session={session} groups={groups}/>
+                                </>
+                            ) : null}
+
+
                         </li>
                         <li>
                             <div className='text-xs font-semibold leading-6 text-gray-400'>

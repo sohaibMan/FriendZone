@@ -74,6 +74,7 @@ export async function POST(req: Request) {
                 friend
             ),
             db.sadd(`group:${groupName}:group-members`, idToAdd),
+            db.sadd(`user:${idToAdd}:groups`, groupName),
             db.srem(`group:${groupName}:incoming_group_requests`, idToAdd),
         ])
 

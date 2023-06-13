@@ -7,6 +7,7 @@ import Button from '@/Components/Buttons/base/Button'
 import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
+import {toast} from "react-hot-toast";
 
 interface AddFriendButtonProps {
 }
@@ -29,8 +30,13 @@ const AddFriendButton: FC<AddFriendButtonProps> = ({}) => {
         try {
             const validatedEmail = addFriendValidator.parse({email})
 
-            await axios.post('/api/friends/add', {
+
+            await toast.promise(axios.post('/api/friends/add', {
                 email: validatedEmail,
+            }), {
+                loading: "loading",
+                success: "success",
+                error:"Sorry an error has occured"
             })
 
             setShowSuccessState(true)

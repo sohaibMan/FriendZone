@@ -1,4 +1,4 @@
-import {LucideProps, Plus, UserPlus, Users} from 'lucide-react'
+import {LucideProps, Merge, Plus, UserPlus, Users} from 'lucide-react'
 
 export const Icons = {
     Logo: (props: LucideProps) => (
@@ -11,7 +11,8 @@ export const Icons = {
     ),
     UserPlus,
     Users,
-    Plus
+    Plus,
+    Merge
 
 }
 

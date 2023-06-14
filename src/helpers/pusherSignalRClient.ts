@@ -1,5 +1,4 @@
 import {HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel} from "@microsoft/signalr";
-import {HOST_NAME} from "./config";
 
 
 // todo maintain one connection per appKey
@@ -10,7 +9,7 @@ class PusherClient {
     constructor(appKey: string) {
         this.appKey = appKey;
         this.connection = new HubConnectionBuilder()
-            .withUrl(HOST_NAME)
+            .withUrl(process.env.PUBLIC_HUB_HOST_NAME)
             .withAutomaticReconnect()
             .configureLogging(LogLevel.Debug)
             .build();

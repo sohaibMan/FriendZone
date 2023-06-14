@@ -1,4 +1,3 @@
-import {HOST_NAME} from "./config";
 import {HubConnection, HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 
 
@@ -15,7 +14,7 @@ class PusherServer {
         this.secret = secret;
 
         this.connection = new HubConnectionBuilder()
-            .withUrl(HOST_NAME)
+            .withUrl(process.env.PUBLIC_HUB_HOST_NAME)
             .configureLogging(LogLevel.Debug)
             .build();
 

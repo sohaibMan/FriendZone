@@ -9,7 +9,7 @@ class PusherClient {
     constructor(appKey: string) {
         this.appKey = appKey;
         this.connection = new HubConnectionBuilder()
-            .withUrl(process.env.PUBLIC_HUB_HOST_NAME)
+            .withUrl(process.env.NEXT_PUBLIC_HUB_HOST_NAME)
             .withAutomaticReconnect()
             .configureLogging(LogLevel.Debug)
             .build();

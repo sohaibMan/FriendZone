@@ -11,5 +11,6 @@ declare namespace NodeJS {
         PUSHER_APP_SECRET: string
         PUSHER_APP_CLUSTER: string
         MONGODB_URI: string
+        PUBLIC_HUB_HOST_NAME: string
     }
 }

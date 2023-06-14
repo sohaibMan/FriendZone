@@ -1,5 +1,5 @@
 import ChatInput from '@/Components/Input/ChatInput'
-import Messages from '@/Components/Layout/Messages'
+import Messages from '@/Components/Messages'
 import {fetchRedis} from '@/helpers/redis'
 import {authOptions} from '@/lib/auth'
 import {messageArrayValidator} from '@/lib/validations/message'

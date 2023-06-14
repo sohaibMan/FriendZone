@@ -1,11 +1,10 @@
 import ChatInput from '@/Components/Input/ChatInput'
-import Messages from '@/Components/Layout/Messages'
 import {fetchRedis} from '@/helpers/redis'
 import {authOptions} from '@/lib/auth'
 import {messageArrayValidator} from '@/lib/validations/message'
 import {getServerSession} from 'next-auth'
-import Image from 'next/image'
 import {notFound} from 'next/navigation'
+import GroupMessages from "@/Components/GroupMessages";
 
 
 export const metadata = {
@@ -35,6 +34,7 @@ async function getChatMessages(groupName: string) {
 
         return messageArrayValidator.parse(reversedDbMessages)
     } catch (error) {
+        console.error(error)
         notFound()
     }
 }
@@ -42,60 +42,61 @@ async function getChatMessages(groupName: string) {
 const page = async ({params}: PageProps) => {
     const {groupName} = params
     const session = await getServerSession(authOptions)
+
     if (!session) notFound()
 
 
     const {user} = session
 
-    const userGroupNames = await fetchRedis('smembers', `user:${user.id}:groups`)
-
-    // check if the user has the right to chat in this group
-    if (!groupName || !userGroupNames.includes(groupName)) {
+    if (!groupName) {
         notFound()
     }
 
 
-    const groupMembersRaw = (await fetchRedis(
+    const userGroupNames = await fetchRedis('smembers', `user:${user.id}:groups`)
+
+    // check if the user has the right to chat in this group
+    if (!userGroupNames.includes(groupName)) {
+        notFound()
+    }
+
+
+    const groupMembersIds = (await fetchRedis(
         'smembers',
         `group:${groupName}:group-members`
     )) as string[]
-    const chatPartners = groupMembersRaw.map(groupMemberRaw => JSON.parse(groupMemberRaw)) as User[]
+
+
+    const groupMembers = await Promise.all(groupMembersIds.map(groupMemberId => (fetchRedis(
+        'get',
+        `user:${groupMemberId}`
+    )))) as string[]
+
+    const chatPartners = groupMembers.map(groupMember => JSON.parse(groupMember)) as User[]
+
     const initialMessages = await getChatMessages(groupName)
 
     return (
         <div className='flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]'>
             <div className='flex sm:items-center justify-between py-3 border-b-2 border-gray-200'>
                 <div className='relative flex items-center space-x-4'>
-                    <div className='relative'>
-                        <div className='relative w-8 sm:w-12 h-8 sm:h-12'>
-                            <Image
-                                fill
-                                referrerPolicy='no-referrer'
-                                src={chatPartners[0].image}
-                                alt={`${chatPartners[0].name} profile picture`}
-                                className='rounded-full'
-                            />
-                        </div>
-                    </div>
-
                     <div className='flex flex-col leading-tight'>
                         <div className='text-xl flex items-center'>
               <span className='text-gray-700 mr-3 font-semibold'>
-                {chatPartners[0].name}
+             Welcome to {groupName} group
               </span>
                         </div>
 
-                        <span className='text-sm text-gray-600'>{chatPartners[0].email}</span>
                     </div>
                 </div>
             </div>
 
-            <Messages
+            <GroupMessages
                 chatId={groupName}
-                chatPartner={chatPartners[0]}
+                chatPartners={chatPartners}
                 sessionImg={session.user.image}
                 sessionId={session.user.id}
-                initialMessages={initialMessages}
+                initialGroupMessages={initialMessages}
             />
             <ChatInput chatId={groupName} chatPartner={chatPartners[0]}/>
         </div>

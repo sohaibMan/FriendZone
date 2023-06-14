@@ -12,6 +12,6 @@ export const pusherServer = new PusherServer({
 export const pusherClient = new PusherClient(
   process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
   {
-    cluster: 'eu',
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
   }
 )

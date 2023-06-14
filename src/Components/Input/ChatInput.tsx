@@ -21,7 +21,7 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
     setIsLoading(true)
 
     try {
-      await axios.post('/api/message/send', { text: input, chatId })
+      await axios.post('/api/friends/message/send', { text: input, chatId })
       setInput('')
       textareaRef.current?.focus()
     } catch {

@@ -1,15 +1,15 @@
-import ChatInput from '@/Components/Input/ChatInput'
 import {fetchRedis} from '@/helpers/redis'
 import {authOptions} from '@/lib/auth'
 import {messageArrayValidator} from '@/lib/validations/message'
 import {getServerSession} from 'next-auth'
 import {notFound} from 'next/navigation'
 import GroupMessages from "@/Components/GroupMessages";
+import GroupChatInput from "@/Components/Input/GroupChatInput";
 
 
 export const metadata = {
     title: 'FriendZone | Dashboard',
-    description: "todo",
+    description: "group chat",
 }
 
 
@@ -98,7 +98,7 @@ const page = async ({params}: PageProps) => {
                 sessionId={session.user.id}
                 initialGroupMessages={initialMessages}
             />
-            <ChatInput chatId={groupName} chatPartner={chatPartners[0]}/>
+            <GroupChatInput groupName={groupName}/>
         </div>
     )
 }

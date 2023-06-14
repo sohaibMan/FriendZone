@@ -63,16 +63,16 @@ export async function POST(req: Request) {
         // notify added user
 
         await Promise.all([
-            pusherServer.trigger(
-                toPusherKey(`user:${idToAdd}:friends`),
-                'new_member',
-                user
-            ),
-            pusherServer.trigger(
-                toPusherKey(`user:${session.user.id}:friends`),
-                'new_member',
-                friend
-            ),
+            // pusherServer.trigger(
+            //     toPusherKey(`user:${idToAdd}:friends`),
+            //     'new_member',
+            //     user
+            // ),
+            // pusherServer.trigger(
+            //     toPusherKey(`user:${session.user.id}:friends`),
+            //     'new_member',
+            //     friend
+            // ),
             db.sadd(`group:${groupName}:group-members`, idToAdd),
             db.sadd(`user:${idToAdd}:groups`, groupName),
             db.srem(`group:${groupName}:incoming_group_requests`, idToAdd),

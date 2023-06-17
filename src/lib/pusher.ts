@@ -4,7 +4,7 @@
 import PusherServer from "@/helpers/pusherSignalRServer";
 import PusherClient from "@/helpers/pusherSignalRClient";
 
-const pusherServer = new PusherServer({
+const pusherServer = PusherServer.getInstance({
     appId: process.env.PUSHER_APP_ID!,
     key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
     secret: process.env.PUSHER_APP_SECRET!,
@@ -19,7 +19,7 @@ const pusherServer = new PusherServer({
 //     useTLS: true,
 // })
 
-const pusherClient = new PusherClient(
+const pusherClient = PusherClient.getInstance(
     process.env.NEXT_PUBLIC_PUSHER_APP_KEY!
 )
 // export const pusherClient = new PusherClient(

@@ -1,12 +1,12 @@
 import {HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel} from "@microsoft/signalr";
 
 
-// todo maintain one connection per appKey
 class PusherClient {
+    private static instance: PusherClient;
     connection: HubConnection;
     appKey: string;
 
-    constructor(appKey: string) {
+    private constructor(appKey: string) {
         this.appKey = appKey;
         this.connection = new HubConnectionBuilder()
             .withUrl(process.env.NEXT_PUBLIC_HUB_HOST_NAME)
@@ -31,6 +31,13 @@ class PusherClient {
         this.connection.on("messagereceived", (channel_name: string) => {
             console.log("message received", channel_name);
         })
+    }
+
+    public static getInstance(appKey: string) {
+        if (!PusherClient.instance) {
+            PusherClient.instance = new PusherClient(appKey);
+        }
+        return PusherClient.instance;
     }
 
     async subscribe(channel_name: string) {

@@ -57,6 +57,8 @@ const GroupMessages: FC<GroupMessagesProps> = ({
 
             {messages.map((message, index) => {
                 const isCurrentUser = message.senderId === sessionId
+                const sender = chatPartners.find(s => s.id === message.senderId);
+                if (!sender) return null;// should never happen
 
                 const hasNextMessageFromSameUser =
                     messages[index - 1]?.senderId === messages[index].senderId
@@ -102,7 +104,7 @@ const GroupMessages: FC<GroupMessagesProps> = ({
                                 <Image
                                     fill
                                     src={
-                                        isCurrentUser ? (sessionImg as string) : chatPartners[0].image
+                                        isCurrentUser ? (sessionImg as string) : sender.image
                                     }
                                     alt='Profile picture'
                                     referrerPolicy='no-referrer'

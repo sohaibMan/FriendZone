@@ -42,7 +42,7 @@
     "tailwind-merge": "1.13.2",
     "typescript": "5.1.6",
     "ws": "^8.13.0",
-    "zod": "^3.22.3"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",

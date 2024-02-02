@@ -38,7 +38,7 @@
     "react-hot-toast": "2.4.1",
     "react-loading-skeleton": "^3.2.0",
     "react-textarea-autosize": "8.5.0",
-    "sharp": "^0.32.1",
+    "sharp": "^0.32.6",
     "tailwind-merge": "1.13.2",
     "typescript": "5.1.6",
     "ws": "^8.13.0",

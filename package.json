@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@headlessui/react": "1.7.15",
+    "@headlessui/react": "1.7.18",
     "@hookform/resolvers": "3.1.1",
     "@microsoft/signalr": "^7.0.7",
     "@next-auth/upstash-redis-adapter": "^3.0.4",

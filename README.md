@@ -27,7 +27,6 @@ This expectation is even higher for real-time chat and messaging, now embedded i
 
 **GitHub Actions** to setup ci/cd and **git** for version control 
 
-**************************Azure / Vercel / Upstash************************** for deployment**************************.**************************
 
 - I’ve mainly used the **observer design pattern** to define a subscription mechanism to notify multiple users in the same channel about any events.
 
@@ -51,11 +50,6 @@ And this repository contains the client logic, with the back-end logic of the co
 
 [https://www.linkedin.com/in/sohaibmanah/](https://www.linkedin.com/in/sohaibmanah/)
 
-**Directed by :**
-
- Pr. ****[Hassan ZILI](https://ma.linkedin.com/in/hzili?trk=public-profile-badge-profile-badge-profile-name)****
-
-[https://www.linkedin.com/in/hzili?miniProfileUrn=urn:li:fs_miniProfile:ACoAAAE0i8EB7ywXqiBqIQ9I4-_ai9_JFCSgIxk&lipi=urn:li:page:d_flagship3_search_srp_all;pCwdKuB0SEi/JXZNk9C6WQ==](https://www.linkedin.com/in/hzili?miniProfileUrn=urn:li:fs_miniProfile:ACoAAAE0i8EB7ywXqiBqIQ9I4-_ai9_JFCSgIxk&lipi=urn:li:page:d_flagship3_search_srp_all;pCwdKuB0SEi/JXZNk9C6WQ==)
 
 **Demo:** [Friends zone](https://friendszone.vercel.app/)
 
